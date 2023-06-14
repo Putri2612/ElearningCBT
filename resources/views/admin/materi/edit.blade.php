@@ -1,6 +1,6 @@
 @extends('template.main')
 @section('content')
-    @include('template.navbar.guru')
+    @include('template.navbar.admin')
 
     <style>
         .custom-file-label::after{
@@ -19,9 +19,9 @@
                     <div class="widget shadow p-3">
                         <div class="widget-heading">
                             <h5 class="">Edit Materi</h5>
-                            <a href="{{ url("/guru/materi") }}" class="btn btn-danger btn-sm mt-3"><span data-feather="arrow-left-circle"></span> Kembali</a>
+                            <a href="{{ url("/admin/materi") }}" class="btn btn-danger btn-sm mt-3"><span data-feather="arrow-left-circle"></span> Kembali</a>
                         </div>
-                        <form action="{{ url('guru/materi/' . $materi->kode) }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                        <form action="{{ url('admin/materi/' . $materi->kode) }}" method="POST" enctype="multipart/form-data" class="mt-3">
                             @csrf
                             @method('PUT')
                             <div class="row">
@@ -36,20 +36,20 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label for="">Mapel</label>
-                                        <select class="form-control" name="mapel" id="mapel_materi" required>
+                                        <label for="">Sesi</label>
+                                        <select class="form-control" name="sesi_id" id="sesi" required>
                                             <option value="">Pilih</option>
-                                            @foreach ($guru_mapel as $gm)
-                                                @if (old('mapel', $materi->mapel_id) == $gm->mapel->id)
-                                                    <option value="{{ $gm->mapel->id }}" selected>{{ $gm->mapel->nama_mapel }}</option>
+                                            @foreach ($akses_sesi as $as)
+                                                @if (old('sesi', $materi->sesi_id) == $as->sesi->sesi_id)
+                                                    <option value="{{ $as->sesi->id }}" selected>{{ $as->sesi->nama_sesi }}</option>
                                                 @else
-                                                    <option value="{{ $gm->mapel->id }}">{{ $gm->mapel->nama_mapel }}</option>
+                                                    <option value="{{ $as->sesi->id }}" selected>{{ $as->sesi->nama_sesi }}</option>
                                                 @endif
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                {{-- <div class="col-lg-4">
                                     <div class="form-group">
                                         <label for="">Kelas</label>
                                         <select class="form-control" name="kelas" id="kelas_materi" required>
@@ -63,7 +63,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="form-group">
                                 <label for="">Text</label>

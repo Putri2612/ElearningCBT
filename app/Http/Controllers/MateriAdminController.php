@@ -169,23 +169,25 @@ class MateriAdminController extends Controller
 //      * @param  \App\Models\Materi  $materi
 //      * @return \Illuminate\Http\Response
 //      */
-//     public function show(Materi $materi)
-//     {
-//         return view('guru.materi.show', [
-//             'title' => 'Lihat Materi',
-//             'plugin' => '
-//                 <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-list-group.css" rel="stylesheet" type="text/css" />
-//                 <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-media_object.css" rel="stylesheet" type="text/css" />
-//             ',
-//             'menu' => [
-//                 'menu' => 'materi',
-//                 'expanded' => 'materi'
-//             ],
-//             'guru' => Guru::firstWhere('id', session('guru')->id),
-//             'materi'  => $materi,
-//             'files' => FileModel::where('kode', $materi->kode)->get()
-//         ]);
-//     }
+    public function show(Materi $materi)
+    {
+        return view('admin.materi.show', [
+            'title' => 'Lihat Materi',
+            'plugin' => '
+                <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-list-group.css" rel="stylesheet" type="text/css" />
+                <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-media_object.css" rel="stylesheet" type="text/css" />
+            ',
+            'menu' => [
+                'menu' => 'materi',
+                'expanded' => 'materi',
+                'collapse' => 'master',
+                'sub' => 'guru',
+            ],
+            'admin' => Admin::firstWhere('id', session('admin')->id),
+            'materi'  => $materi,
+            'files' => FileModel::where('kode', $materi->kode)->get()
+        ]);
+    }
 
 //     /**
 //      * Show the form for editing the specified resource.
@@ -193,28 +195,30 @@ class MateriAdminController extends Controller
 //      * @param  \App\Models\Materi  $materi
 //      * @return \Illuminate\Http\Response
 //      */
-//     public function edit(Materi $materi)
-//     {
-//         return view('guru.materi.edit', [
-//             'title' => 'Tambah Materi',
-//             'plugin' => '
-//                 <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-list-group.css" rel="stylesheet" type="text/css" />
-//                 <link href="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.css" rel="stylesheet" type="text/css" />
-//                 <script src="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.js"></script>
-//                 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-//                 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-//             ',
-//             'menu' => [
-//                 'menu' => 'materi',
-//                 'expanded' => 'materi'
-//             ],
-//             'guru' => Guru::firstWhere('id', $materi->guru_id),
-//             'materi'  => $materi,
-//             'files' => FileModel::where('kode', $materi->kode)->get(),
-//             'guru_kelas' => Gurukelas::where('guru_id', $materi->guru_id)->get(),
-//             'guru_mapel' => Gurumapel::where('guru_id', $materi->guru_id)->get(),
-//         ]);
-//     }
+    public function edit(Materi $materi)
+    {
+        return view('admin.materi.edit', [
+            'title' => 'Tambah Materi',
+            'plugin' => '
+                <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-list-group.css" rel="stylesheet" type="text/css" />
+                <link href="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.css" rel="stylesheet" type="text/css" />
+                <script src="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.js"></script>
+                <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+                <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+            ',
+            'menu' => [
+                'menu' => 'materi',
+                'expanded' => 'materi',
+                'collapse' => 'master',
+                'sub' => 'guru',
+            ],
+            'admin' => Admin::firstWhere('id', session('admin')->id),
+            'materi'  => $materi,
+            'files' => FileModel::where('kode', $materi->kode)->get(),
+            'akses_sesi' => AksesSesi::where('sesi_id', $materi->sesi_id)->get(),
+           
+        ]);
+    }
 
 //     /**
 //      * Update the specified resource in storage.
@@ -223,40 +227,47 @@ class MateriAdminController extends Controller
 //      * @param  \App\Models\Materi  $materi
 //      * @return \Illuminate\Http\Response
 //      */
-//     public function update(Request $request, Materi $materi)
-//     {
-//         $validateMateri = $request->validate([
-//             'nama_materi' => 'required',
-//             'teks' => 'required',
-//         ]);
-//         $validateMateri['kelas_id'] = $request->kelas;
-//         $validateMateri['mapel_id'] = $request->mapel;
+    public function update(Request $request, Materi $materi)
+    {
+        $validateMateri = $request->validate([
+            'nama_materi' => 'required',
+            'teks' => 'required',
+        ]);
+        $akses_sesi = AksesSesi::where('id', $request->sesi_id)->first();
+        //dd($request->all());
+        $kelompok_belajar = KelompokBelajar::where('id_kelas', $akses_sesi->kelas_id)->first();
+        //dd($kelompok_belajar);
+        $siswa = Siswa::where('kelas_id', $akses_sesi->kelas_id)->get();
+        //dd($siswa);
+        $validateMateri['guru_id'] = $kelompok_belajar->id_guru;
+        $validateMateri['kelas_id'] = $akses_sesi->kelas_id;
+        $validateMateri['sesi_id'] = $request->sesi_id;
 
-//         if ($request->file('file_materi')) {
-//             $files = [];
-//             foreach ($request->file('file_materi') as $file) {
-//                 array_push($files, [
-//                     'kode' => $materi->kode,
-//                     'nama' => Str::replace('assets/files/', '', $file->store('assets/files'))
-//                 ]);
-//             }
-//             FileModel::insert($files);
-//         }
+        if ($request->file('file_materi')) {
+            $files = [];
+            foreach ($request->file('file_materi') as $file) {
+                array_push($files, [
+                    'kode' => $materi->kode,
+                    'nama' => Str::replace('assets/files/', '', $file->store('assets/files'))
+                ]);
+            }
+            FileModel::insert($files);
+        }
 
-//         Materi::where('id', $materi->id)
-//             ->update($validateMateri);
+        Materi::where('id', $materi->id)
+            ->update($validateMateri);
 
-//         return redirect('/guru/materi')->with('pesan', "
-//             <script>
-//                 swal({
-//                     title: 'Success!',
-//                     text: 'materi sudah di update!',
-//                     type: 'success',
-//                     padding: '2em'
-//                 })
-//             </script>
-//         ");
-//     }
+        return redirect('/admin/materi')->with('pesan', "
+            <script>
+                swal({
+                    title: 'Success!',
+                    text: 'materi sudah di update!',
+                    type: 'success',
+                    padding: '2em'
+                })
+            </script>
+        ");
+    }
 
 //     /**
 //      * Remove the specified resource from storage.
@@ -264,34 +275,34 @@ class MateriAdminController extends Controller
 //      * @param  \App\Models\Materi  $materi
 //      * @return \Illuminate\Http\Response
 //      */
-//     public function destroy(Materi $materi)
-//     {
-//         $files = FileModel::where('kode', $materi->kode)->get();
-//         if ($files) {
-//             foreach ($files as $file) {
-//                 Storage::delete('assets/files/' . $file->nama);
-//             }
+    public function destroy(Materi $materi)
+    {
+        $files = FileModel::where('kode', $materi->kode)->get();
+        if ($files) {
+            foreach ($files as $file) {
+                Storage::delete('assets/files/' . $file->nama);
+            }
 
-//             FileModel::where('kode', $materi->kode)
-//                 ->delete();
-//         }
+            FileModel::where('kode', $materi->kode)
+                ->delete();
+        }
 
-//         Notifikasi::where('kode', $materi->kode)
-//             ->delete();
+        Notifikasi::where('kode', $materi->kode)
+            ->delete();
 
-//         Userchat::where('key', $materi->kode)
-//             ->delete();
+        Userchat::where('key', $materi->kode)
+            ->delete();
 
-//         Materi::destroy($materi->id);
-//         return redirect('/guru/materi')->with('pesan', "
-//             <script>
-//                 swal({
-//                     title: 'Success!',
-//                     text: 'materi di hapus!',
-//                     type: 'success',
-//                     padding: '2em'
-//                 })
-//             </script>
-//         ");
-//     }
-}
+        Materi::destroy($materi->id);
+        return redirect('/admin/materi')->with('pesan', "
+            <script>
+                swal({
+                    title: 'Success!',
+                    text: 'materi di hapus!',
+                    type: 'success',
+                    padding: '2em'
+                })
+            </script>
+        ");
+    }
+    }

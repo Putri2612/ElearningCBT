@@ -1,6 +1,6 @@
 @extends('template.main')
 @section('content')
-    @include('template.navbar.guru')
+    @include('template.navbar.admin')
 
 <style>
     iframe{
@@ -26,8 +26,8 @@
                                 <th> : {{  $materi->kelas->nama_kelas  }}</th>
                             </tr>
                             <tr>
-                                <th>mapel</th>
-                                <th> : {{  $materi->mapel->nama_mapel  }}</th>
+                                <th>Sesi</th>
+                                <th> : {{  $materi->sesi->nama_sesi  }}</th>
                             </tr>
                             <tr>
                                 <th>Waktu & Tanggal</th>
@@ -118,7 +118,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ url("/guru/materi") }}" class="btn btn-primary mt-3">Kembali</a>
+                        <a href="{{ url("/admin/materi") }}" class="btn btn-primary mt-3">Kembali</a>
                     </div>
                 </div>
             </div>
