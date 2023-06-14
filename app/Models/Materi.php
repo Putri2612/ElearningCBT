@@ -12,7 +12,7 @@ class Materi extends Model
 
     protected $guarded = ['id'];
 
-    protected $with = ['guru', 'mapel', 'kelas'];
+    protected $with = ['guru', 'sesi', 'kelas'];
 
     // Relasi Ke Guru
     public function guru()
@@ -20,9 +20,9 @@ class Materi extends Model
         return $this->belongsTo(Guru::class);
     }
     // Relasi Ke Mapel
-    public function mapel()
+    public function sesi()
     {
-        return $this->belongsTo(Mapel::class);
+        return $this->belongsTo(Sesi::class);
     }
     // relasi Ke kelas
     public function kelas()

@@ -26,7 +26,7 @@
                                             <td>{{ $kel->nama_kelas }}</td>
                                             <td>
                                                 <label class="new-control new-checkbox checkbox-primary">
-                                                    <input type="checkbox" class="new-control-input check-kelas" {{ check_kelas($sesi->id, $kel->id) }}  data-id_sesi="{{ $sesi->id }}" data-id_kelas="{{ $kel->id }}">
+                                                    <input type="checkbox" class="new-control-input check-sesi" {{ check_relasi($sesi->id, $kel->id) }}  data-id_sesi="{{ $sesi->id }}" data-id_kelas="{{ $kel->id }}">
                                                     <span class="new-control-indicator"></span> Mengakses
                                                 </label>
                                             </td>
@@ -76,7 +76,7 @@
 </div>
 <!--  END CONTENT AREA  -->
 <script>
-    $(document).ready(function(){$(".check-kelas").on("click",function(){var a=$(this).data("id_sesi"),e=$(this).data("id_kelas");$.ajax({type:"get",data:{id_sesi:a,id_kelas:e},async:!0,url:"{{ route('akses_sesi') }}",success:function(){swal({title:"Berhasil!",text:"relasi di ubah!",type:"success",padding:"2em"})}})})});
+    $(document).ready(function(){$(".check-sesi").on("click",function(){var a=$(this).data("id_sesi"),e=$(this).data("id_kelas");$.ajax({type:"get",data:{id_sesi:a,id_kelas:e},async:!0,url:"{{ route('akses_sesi') }}",success:function(){swal({title:"Berhasil!",text:"relasi di ubah!",type:"success",padding:"2em"})}})})});
 </script>
 
 

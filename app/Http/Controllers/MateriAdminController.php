@@ -6,6 +6,8 @@ use App\Models\Guru;
 use App\Models\Admin;
 use App\Models\Siswa;
 use App\Models\Materi;
+use App\Models\Sesi;
+use App\Models\AksesSesi;
 use App\Mail\NotifMateri;
 use App\Models\EmailSettings;
 use App\Models\FileModel;

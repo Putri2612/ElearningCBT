@@ -9,7 +9,7 @@ class AksesSesi extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
-
+    protected $table ='akses_sesi';
     protected $with = ['sesi', 'kelas'];
 
     // Relasi Ke Guru

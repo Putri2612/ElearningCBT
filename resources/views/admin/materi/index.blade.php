@@ -30,7 +30,7 @@
                                             @foreach ($materi as $m)
                                                 <tr>
                                                     <td>{{ $m->nama_materi }}</td>
-                                                    <td>{{ $m->mapel->nama_mapel }}</td>
+                                                    <td>{{ $m->mapel->sesi_sesi }}</td>
                                                     <td>{{ $m->kelas->nama_kelas }}</td>
                                                     <td>
                                                         <a href="{{ url('/admin/materi/' . $m->kode) }}"

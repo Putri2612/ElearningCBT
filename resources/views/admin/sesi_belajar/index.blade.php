@@ -21,7 +21,7 @@
                                     <thead>
                                         <tr>
                                             <th>Nama Sesi</th>
-                                            <th>Kelas</th>
+                                            <th>Deskripsi</th>
                                             <th>Opsi</th>
                                         </tr>
                                     </thead>
