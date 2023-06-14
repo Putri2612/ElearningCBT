@@ -18,12 +18,18 @@ class KelompokBelajarSiswa extends Model
     // Relasi Ke Guru
     public function siswa()
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(Siswa::class, 'nis_siswa');
     }
     public function kelas()
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->belongsToMany(Kelas::class);
     }
+
+    public function kelompokBelajar()
+    {
+        return $this->belongsTo(KelompokBelajar::class);
+    }
+
     public $timestamps = false;
 
 }

@@ -634,7 +634,7 @@ class AdminController extends Controller
     public function kelompok_belajar()
     {
         $kelas = Kelas::all();
-        $guru = Guru::all(); 
+        $guru = Guru::all();
         return view('admin.kelompok_belajar.index', [
             'title' => 'Data Kelompok Belajar',
             'plugin' => '
@@ -664,7 +664,7 @@ class AdminController extends Controller
 
         // jupuk data kelas
         $data_kelas = Kelas::find($id_kelas);
-        
+
         $dataSiswa = Siswa::where('kelas_id', $id_kelas)->get();;
 
         $siswaTemp = [];
@@ -678,7 +678,7 @@ class AdminController extends Controller
             $itung = $i;
             $namakelompok = "Kelompok ". $data_kelas->nama_kelas . " ".++$itung;
             $kelompokTemp = [];
-            for ($j=0; $j < $jumlah; $j++) { 
+            for ($j=0; $j < $jumlah; $j++) {
                 $nisRandom = $siswaTemp[array_rand($siswaTemp)];
                 $kelompokTemp[] = $nisRandom;
                 $key = array_search($nisRandom, $siswaTemp);
@@ -693,7 +693,7 @@ class AdminController extends Controller
         }
         // dd($siswaTemp);
         if(count($siswaTemp) > 0){
-            for ($i=0; $i < count($siswaTemp); $i++) { 
+            for ($i=0; $i < count($siswaTemp); $i++) {
                 $dataKelompok[$i]['dataSiswa'][] = $value;
             }
         }
@@ -706,7 +706,7 @@ class AdminController extends Controller
             $kelompokBelajar->id_guru = $id_guru;
             $kelompokBelajar->save();
             $dataFresh = $kelompokBelajar->fresh();
-            
+
             foreach ($kelompok['dataSiswa'] as $key => $value) {
                 $kelompokSiswa = new KelompokBelajarSiswa();
                 $kelompokSiswa->id_kelompok = $dataFresh->id;
@@ -714,7 +714,7 @@ class AdminController extends Controller
                 $kelompokSiswa->save();
             }
         }
-        
+
 
         return redirect('/admin/kelompok_belajar')->with('pesan', "
             <script>
@@ -731,7 +731,9 @@ class AdminController extends Controller
     public function showKelompok($id)
     {
         $kelompok = KelompokBelajar::find($id);
-        $anggotaKelompok = $kelompok->siswa()->where('id_kelompok', $id)->get();
+        // $anggotaKelompok = $kelompok->siswa()->where('id_kelompok', $id)->get();
+        // dd($kelompok->kelom);
+        // dd($kelompok->kelompokBelajarSiswa);
         return view('admin.kelompok_belajar.show', [
             'title' => 'Detail Kelompok',
             'plugin' => '
@@ -749,16 +751,16 @@ class AdminController extends Controller
             'admin' => Admin::firstWhere('id', session('admin')->id),
             'sesi' => Sesi::all(),
             'kelompok' => $kelompok,
-            'anggotaKelompok' => $anggotaKelompok,
-            
+            'anggotaKelompok' => $kelompok->kelompokBelajarSiswa,
+
         ]);
         // // Lakukan pengambilan data kelompok belajar berdasarkan $id_kelompok
         // $kelompok = KelompokBelajar::find($id);
-    
+
         // // Render view detail kelompok belajar dan kirimkan data ke dalam view
         // return view('admin.kelompok_belajar.show', compact('kelompok'));
     }
-    
+
 
     // public function edit_kelompok(Request $request)
     // {
@@ -782,7 +784,7 @@ class AdminController extends Controller
     //         </script>
     //     ");
     // }
-    
+
     public function getSiswaByKelas($id_kelas)
     {
         $siswa = Siswa::where('kelas_id', $id_kelas)->get();
@@ -806,7 +808,7 @@ class AdminController extends Controller
         return response()->json(['message' => 'Data siswa berhasil disimpan ke dalam tabel kelompok_belajar_siswa'], 200);
     }
 
-    
+
     public function hapus_kelompok(KelompokBelajar $kelompok)
     {
         KelompokBelajar::destroy($kelompok->id);
@@ -820,7 +822,7 @@ class AdminController extends Controller
                 })
             </script>
         ");
-        
+
     }
      //Start Sesi Belajar
      public function sesi_belajar()
@@ -886,7 +888,7 @@ class AdminController extends Controller
     }
      public function tambah_sesi(Request $request)
      {
- 
+
          $sesi = [];
          $index = 0;
          foreach ($request['nama_sesi'] as $namaSesi) {
@@ -896,10 +898,10 @@ class AdminController extends Controller
              ]);
              $index++;
          }
- 
+
          Sesi::insert($sesi);
- 
- 
+
+
              return redirect('/admin/sesi_belajar')->with('pesan', "
                  <script>
                      swal({
@@ -911,17 +913,17 @@ class AdminController extends Controller
                  </script>
              ");
      }
- 
+
      public function edit_sesi(Request $request)
      {
          $validate = $request->validate([
              'nama_sesi'=> 'required',
              'deskripsi' => 'required'
          ]);
- 
+
          Sesi::where('id', $request->input('id'))
              ->update($validate);
- 
+
          return redirect('/admin/sesi_belajar')->with('pesan', "
              <script>
                  swal({
@@ -936,7 +938,7 @@ class AdminController extends Controller
      public function hapus_sesi(Request $request)
      {
          $sesiId = $request->query('id');
- 
+
          $sesi_belajar = Sesi::find($sesiId);
          if (!$sesi_belajar) {
              return redirect('/admin/sesi_belajar')->with('pesan', "
@@ -950,9 +952,9 @@ class AdminController extends Controller
                  </script>
              ");
          }
- 
+
          $sesi_belajar->delete();
- 
+
          return redirect('/admin/sesi_belajar')->with('pesan', "
              <script>
                  swal({
@@ -987,7 +989,7 @@ class AdminController extends Controller
         ]);
     }
 
-    
+
     public function tambah_kelas(Request $request)
     {
         $kelass = $request->get('nama_kelas');
