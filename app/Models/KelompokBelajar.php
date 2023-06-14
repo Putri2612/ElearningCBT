@@ -13,11 +13,18 @@ class KelompokBelajar extends Model
 
     public function siswa()
     {
-        return $this->belongsToMany(Siswa::class, 'kelompok_belajar_siswa', 'id', 'nis_siswa');
+        return $this->belongsToMany(Siswa::class, 'kelompok_belajar_siswa', 'id_kelompok', 'nis_siswa');
     }
 
     public function kelas()
     {
         return $this->belongsTo(Kelas::class, 'id_kelas');
     }
+
+    public function guru()
+    {
+        return $this->belongsTo(Guru::class, 'id_guru');
+    }
+
+    
 }

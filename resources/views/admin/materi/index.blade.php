@@ -13,7 +13,7 @@
                             <div class="col-lg-7">
                                 <div class="widget-heading">
                                     <h5 class="">Materi</h5>
-                                    <a href="{{ url('/guru/materi/create') }}" class="btn btn-primary btn-sm mt-3"><span
+                                    <a href="{{ url('/admin/materi/create') }}" class="btn btn-primary btn-sm mt-3"><span
                                             data-feather="book-open"></span> Tambah Materi</a>
                                 </div>
                                 <div class="table-responsive mt-3">
@@ -33,13 +33,13 @@
                                                     <td>{{ $m->mapel->nama_mapel }}</td>
                                                     <td>{{ $m->kelas->nama_kelas }}</td>
                                                     <td>
-                                                        <a href="{{ url('/guru/materi/' . $m->kode) }}"
+                                                        <a href="{{ url('/admin/materi/' . $m->kode) }}"
                                                             class="btn btn-primary btn-sm"><span
                                                                 data-feather="eye"></span></a>
-                                                        <a href="{{ url('/guru/materi/' . $m->kode . '/edit') }}"
+                                                        <a href="{{ url('/admin/materi/' . $m->kode . '/edit') }}"
                                                             class="btn btn-success btn-sm"><span
                                                                 data-feather="edit"></span></a>
-                                                        <form action="{{ url('/guru/materi/' . $m->kode) }}" method="post"
+                                                        <form action="{{ url('/admin/materi/' . $m->kode) }}" method="post"
                                                             class="d-inline" id="formHapus">
                                                             @csrf
                                                             @method('DELETE')

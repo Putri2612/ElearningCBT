@@ -628,9 +628,12 @@ class AdminController extends Controller
         return Excel::download(new GuruExport, 'data-guru.xlsx');
     }
 
+    //Kelompok Belajar
+
     public function kelompok_belajar()
     {
-        $kelas = Kelas::all(); // Ganti Kelas dengan model yang sesuai
+        $kelas = Kelas::all();
+        $guru = Guru::all(); 
         return view('admin.kelompok_belajar.index', [
             'title' => 'Data Kelompok Belajar',
             'plugin' => '
@@ -647,7 +650,8 @@ class AdminController extends Controller
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
             'kelompok_belajar' => KelompokBelajar::with('kelas')->get(),
-            'kelas' => $kelas
+            'kelas' => $kelas,
+            'guru' => $guru
         ]);
     }
     public function tambahkelompok(Request $request)
@@ -655,6 +659,7 @@ class AdminController extends Controller
         // $namakelompok = $request->get('nama_kelompok');
         $id_kelas = $request->get('id_kelas');
         $jumlah = $request->get('jumlah_kelompok');
+        $id_guru = $request->get('id_guru');
 
         // jupuk data kelas
         $data_kelas = Kelas::find($id_kelas);
@@ -697,6 +702,7 @@ class AdminController extends Controller
             $kelompokBelajar = new KelompokBelajar();
             $kelompokBelajar->nama_kelompok = $kelompok['nama_kelompok'];
             $kelompokBelajar->id_kelas = $id_kelas; // Menggunakan $id_kelas yang diterima dari permintaan
+            $kelompokBelajar->id_guru = $id_guru;
             $kelompokBelajar->save();
             $dataFresh = $kelompokBelajar->fresh();
             
@@ -721,14 +727,36 @@ class AdminController extends Controller
         ");
     }
 
-    // public function showDetailKelompok($id)
-    // {
-    //     // Lakukan pengambilan data kelompok belajar berdasarkan $id_kelompok
-    //     $kelompok = KelompokBelajar::find($id);
+    public function showKelompok($id)
+    {
+        $kelompok = KelompokBelajar::find($id);
+        $anggotaKelompok = $kelompok->siswa()->where('id_kelompok', $id)->get();
+        return view('admin.kelompok_belajar.show', [
+            'title' => 'Detail Kelompok',
+            'plugin' => '
+                <link rel="stylesheet" type="text/css" href="' . url("/assets/cbt-malela") . '/plugins/table/datatable/datatables.css">
+                <link rel="stylesheet" type="text/css" href="' . url("/assets/cbt-malela") . '/plugins/table/datatable/dt-global_style.css">
+                <script src="' . url("/assets/cbt-malela") . '/plugins/table/datatable/datatables.js"></script>
+                <script src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
+            ',
+            'menu' => [
+                'menu' => 'kelompok_belajar',
+                'expanded' => 'kelompok_belajar',
+                'collapse' => '',
+                'sub' => '',
+            ],
+            'admin' => Admin::firstWhere('id', session('admin')->id),
+            'sesi' => Sesi::all(),
+            'kelompok' => $kelompok,
+            'anggotaKelompok' => $anggotaKelompok,
+            
+        ]);
+        // // Lakukan pengambilan data kelompok belajar berdasarkan $id_kelompok
+        // $kelompok = KelompokBelajar::find($id);
     
-    //     // Render view detail kelompok belajar dan kirimkan data ke dalam view
-    //     return view('/admin/kelompok_belajar', compact('kelompok'));
-    // }
+        // // Render view detail kelompok belajar dan kirimkan data ke dalam view
+        // return view('admin.kelompok_belajar.show', compact('kelompok'));
+    }
     
 
     // public function edit_kelompok(Request $request)
@@ -793,7 +821,6 @@ class AdminController extends Controller
         ");
         
     }
-    
      //Start Sesi Belajar
      public function sesi_belajar()
      {

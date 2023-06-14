@@ -26,10 +26,9 @@
                                             <tr>
                                                 <td><?= $kb->nama_kelompok; ?></td> 
                                                 <td>
-                                                    {{-- <a href="#" class="btn btn-primary btn-sm btn-detail-kelompok" data-toggle="modal" data-target="#detail_kelompok" data-id_kelompok="{{ $kb->id }}">
-                                                        <span data-feather="eye"></span>
-                                                    </a> --}}
-                                                                                                      
+                                                    <a href="{{ url('/admin/kelompok_belajar/' . $kb->id) }}"
+                                                        class="btn btn-primary btn-sm"><span
+                                                            data-feather="eye"></span></a>                                                               
                                                     {{-- <a href="javascript:void(0)" data-toggle="modal" data-target="#edit_kelompok_belajar" data-id="{{ $kb->id }}" data-nama_kelompok="{{ $kb->nama_kelompok }}" data-id_kelas="{{ $kb->kelas->id }}" class="btn btn-primary btn-sm edit-kelompok-belajar">
                                                         <i data-feather="edit"></i>
                                                     </a> --}}
@@ -85,6 +84,15 @@
                     </div>
                     <div id="siswaContainer">
                         <!-- Daftar siswa yang akan ditampilkan setelah memilih kelas -->
+                    </div>
+                    <div class="form-group">
+                        <label for="id_guru">Kelas</label>
+                        <select name="id_guru" id="id_guru" class="form-control">
+                            <option value="id_guru">Pilih Guru</option>
+                            @foreach ($guru as $g)
+                                <option value="{{ $g->id }}">{{  $g->nama_guru }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">

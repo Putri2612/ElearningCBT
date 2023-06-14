@@ -10,6 +10,7 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\TugasGuruController;
 use App\Http\Controllers\UjianGuruController;
 use App\Http\Controllers\MateriGuruController;
+use App\Http\Controllers\MateriAdminController;
 use App\Http\Controllers\SummernoteController;
 use App\Http\Controllers\TugasSiswaController;
 use App\Http\Controllers\MateriSiswaController;
@@ -91,7 +92,7 @@ Route::get('/admin/hapus_kelas/{kelas:id}', [AdminController::class, 'hapus_kela
 // ============KELOMPOK BELAJAR
 // ==>View
 Route::get('/admin/kelompok_belajar', [AdminController::class, 'kelompok_belajar'])->middleware('is_admin');
-// Route::get('/admin/detail_kelompok/{id}', [AdminController::class, 'showDetailKelompok'])->name('detail_kelompok');
+Route::get('/admin/kelompok_belajar/{id}', [AdminController::class, 'showKelompok'])->middleware('is_admin');
 
 
 // ==>Function

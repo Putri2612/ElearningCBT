@@ -25,4 +25,10 @@ class Sesi extends Model
         return $this->hasMany(Tugas::class);
     }
 
+    public function guru()
+    {
+        return $this->belongsTo(Guru::class);
+    }
+
+
 }

@@ -14,6 +14,16 @@ class KelompokBelajarSiswa extends Model
         'id_kelompok',
         'nis',
     ];
+
+    // Relasi Ke Guru
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class);
+    }
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
+    }
     public $timestamps = false;
 
 }
