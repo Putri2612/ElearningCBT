@@ -38,10 +38,10 @@
                                 <th>NIS</th>
                                 <th>Nama</th>
                             </tr>
-                            @foreach ($anggotaKelompok as $anggota)
+                            @foreach ($anggota as $a)
                                 <tr>
-                                    <td>{{ $anggota->nis_siswa }}</td>
-                                    <td>{{ $anggota->nama_siswa }}</td>
+                                    <td>{{ $a['nis_siswa'] }}</td>
+                                    <td>{{ $a['nama_siswa'] }}</td>
                                 </tr>
                             @endforeach
                         </table>

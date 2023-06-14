@@ -21,8 +21,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Nama Materi</th>
-                                                <th>Mapel</th>
-                                                <th>Kelas</th>
+                                                <th>Sesi</th>
                                                 <th>Opsi</th>
                                             </tr>
                                         </thead>
@@ -30,8 +29,7 @@
                                             @foreach ($materi as $m)
                                                 <tr>
                                                     <td>{{ $m->nama_materi }}</td>
-                                                    <td>{{ $m->mapel->sesi_sesi }}</td>
-                                                    <td>{{ $m->kelas->nama_kelas }}</td>
+                                                    <td>{{ $m->sesi->nama_sesi }}</td>
                                                     <td>
                                                         <a href="{{ url('/admin/materi/' . $m->kode) }}"
                                                             class="btn btn-primary btn-sm"><span

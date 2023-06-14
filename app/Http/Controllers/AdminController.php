@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EmailSettings;
 use App\Models\Guru;
+
 use App\Models\Admin;
 use App\Models\Kelas;
 use App\Models\Mapel;
@@ -731,7 +732,21 @@ class AdminController extends Controller
     public function showKelompok($id)
     {
         $kelompok = KelompokBelajar::find($id);
-        $anggotaKelompok = $kelompok->siswa()->where('id_kelompok', $id)->get();
+        $anggotaKelompok = KelompokBelajarSiswa::where('id_kelompok', $id)->get();
+        $nis_siswa = $anggotaKelompok->pluck('nis_siswa')->toArray(); // Mengambil semua nilai nis_siswa dari koleksi anggotaKelompok
+
+        $siswa = Siswa::whereIn('nis', $nis_siswa)->get(['nis', 'nama_siswa']);
+        $siswa = $siswa->keyBy('nis'); // Mengindekskan siswa berdasarkan nis
+
+        $anggota = [];
+
+        foreach ($nis_siswa as $nis) {
+            $anggota[] = [
+                'nis_siswa' => $nis,
+                'nama_siswa' => $siswa[$nis]->nama_siswa,
+            ];
+        }
+       
         return view('admin.kelompok_belajar.show', [
             'title' => 'Detail Kelompok',
             'plugin' => '
@@ -749,6 +764,8 @@ class AdminController extends Controller
             'admin' => Admin::firstWhere('id', session('admin')->id),
             'sesi' => Sesi::all(),
             'kelompok' => $kelompok,
+            'siswa' => $siswa,
+            'anggota'=>$anggota,
             'anggotaKelompok' => $anggotaKelompok,
             
         ]);

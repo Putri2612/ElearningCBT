@@ -41,7 +41,7 @@
                                                     </div>
                                                     <div class="t-name">
                                                         <h4>{{ $ts->tugas->nama_tugas }}</h4>
-                                                        <p class="meta-date">{{ $ts->tugas->mapel->nama_mapel }}</p>
+                                                        <p class="meta-date">{{ $ts->tugas->nama_tugas }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="t-rate rate-dec">
@@ -89,7 +89,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="t-name">
-                                                        <h4>{{ $nm->materi->nama_materi }}</h4>
+                                                        <h4>{{ $nm->materi->sesi->nama_sesi }}</h4>
                                                         <p class="meta-date">{{ $nm->materi->mapel->nama_mapel }}</p>
                                                     </div>
                                                 </div>

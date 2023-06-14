@@ -7,6 +7,7 @@ use App\Models\Admin;
 use App\Models\Siswa;
 use App\Models\Materi;
 use App\Models\Sesi;
+use App\Models\KelompokBelajar;
 use App\Models\AksesSesi;
 use App\Mail\NotifMateri;
 use App\Models\EmailSettings;
@@ -53,26 +54,29 @@ class MateriAdminController extends Controller
 //      *
 //      * @return \Illuminate\Http\Response
 //      */
-//     public function create()
-//     {
-//         return view('guru.materi.create', [
-//             'title' => 'Tambah Materi',
-//             'plugin' => '
-//                 <link href="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.css" rel="stylesheet" type="text/css" />
-//                 <script src="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.js"></script>
-//                 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-//                 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-//                 <script src="' . url("/assets/cbt-malela") . '/plugins/resumable.js"></script>
-//             ',
-//             'menu' => [
-//                 'menu' => 'materi',
-//                 'expanded' => 'materi'
-//             ],
-//             'guru' => Guru::firstWhere('id', session('guru')->id),
-//             'guru_kelas' => Gurukelas::where('guru_id', session('guru')->id)->get(),
-//             'guru_mapel' => Gurumapel::where('guru_id', session('guru')->id)->get(),
-//         ]);
-//     }
+    public function create()
+    {
+        return view('admin.materi.create', [
+            'title' => 'Tambah Materi',
+            'plugin' => '
+                <link href="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.css" rel="stylesheet" type="text/css" />
+                <script src="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.js"></script>
+                <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+                <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+                <script src="' . url("/assets/cbt-malela") . '/plugins/resumable.js"></script>
+            ',
+            'menu' => [
+                'menu' => 'materi',
+                'expanded' => 'materi',
+                'collapse' => 'master',
+                'sub' => 'guru',
+            ],
+            'admin' => Admin::firstWhere('id', session('admin')->id),
+            'sesi' => Sesi::all(),
+            'akses_sesi' => AksesSesi::all(),
+            //'guru_mapel' => Gurumapel::where('guru_id', session('guru')->id)->get(),
+        ]);
+    }
 
 //     /**
 //      * Store a newly created resource in storage.
@@ -80,79 +84,84 @@ class MateriAdminController extends Controller
 //      * @param  \Illuminate\Http\Request  $request
 //      * @return \Illuminate\Http\Response
 //      */
-//     public function store(Request $request)
-//     {
-//         $email_settings = EmailSettings::first();
-//         $siswa = Siswa::where('kelas_id', $request->kelas)->get();
-//         if ($siswa->count() == 0) {
-//             return redirect('/guru/materi/create')->with('pesan', "
-//                 <script>
-//                     swal({
-//                         title: 'Error!',
-//                         text: 'belum ada siswa di kelas tersebut!',
-//                         type: 'error',
-//                         padding: '2em'
-//                     })
-//                 </script>
-//             ")->withInput();
-//         }
-//         $validateMateri = $request->validate([
-//             'nama_materi' => 'required',
-//             'teks' => 'required',
-//         ]);
-//         $validateMateri['kode'] = Str::random(20);
-//         $validateMateri['guru_id'] = session('guru')->id;
-//         $validateMateri['kelas_id'] = $request->kelas;
-//         $validateMateri['mapel_id'] = $request->mapel;
+    public function store(Request $request)
+    {
+        $email_settings = EmailSettings::first();
+        $akses_sesi = AksesSesi::where('id', $request->sesi_id)->first();
+        $kelompok_belajar = KelompokBelajar::where('id_kelas', $akses_sesi->kelas_id)->first();
+        //dd($kelompok_belajar);
+        $siswa = Siswa::where('kelas_id', $akses_sesi->kelas_id)->get();
+        
+        if ($siswa->count() == 0) {
+            return redirect('/admin/materi/create')->with('pesan', "
+                <script>
+                    swal({
+                        title: 'Error!',
+                        text: 'belum ada siswa di kelas tersebut!',
+                        type: 'error',
+                        padding: '2em'
+                    })
+                </script>
+            ")->withInput();
+        }
+        $validateMateri = $request->validate([
+            'nama_materi' => 'required',
+            'teks' => 'required',
+        ]);
+        $validateMateri['kode'] = Str::random(20);
+        $validateMateri['guru_id'] = $kelompok_belajar->id_guru;
+        $validateMateri['kelas_id'] = $akses_sesi->kelas_id;
+        $validateMateri['sesi_id'] = $request->sesi_id;
+        // $validateMateri['mapel_id'] = $request->mapel;
 
-//         $email_siswa = '';
-//         $notifikasi = [];
-//         foreach ($siswa as $s) {
-//             $email_siswa .= $s->email . ',';
+        $email_siswa = '';
+        $notifikasi = [];
+        foreach ($siswa as $s) {
+            $email_siswa .= $s->email . ',';
 
-//             array_push($notifikasi, [
-//                 'nama' => $request->nama_materi,
-//                 'siswa_id' => $s->id,
-//                 'key' => 'materi',
-//                 'kode' => $validateMateri['kode']
-//             ]);
-//         }
+            array_push($notifikasi, [
+                'nama' => $request->nama_materi,
+                'siswa_id' => $s->id,
+                'key' => 'materi',
+                'kode' => $validateMateri['kode']
+            ]);
+        }
 
-//         $email_siswa = Str::replaceLast(',', '', $email_siswa);
-//         $email_siswa = explode(',', $email_siswa);
-//         if ($email_settings->notif_materi == 1) {
-//             $details = [
-//                 'nama_guru' => session('guru')->nama_guru,
-//                 'nama_materi' => $request->nama_materi
-//             ];
-//             Mail::to($email_siswa)->send(new NotifMateri($details));
-//         }
+        $email_siswa = Str::replaceLast(',', '', $email_siswa);
+        $email_siswa = explode(',', $email_siswa);
+        if ($email_settings->notif_materi == 1) {
+            $details = [
+                'nama_guru' => $kelompok_belajar->id_guru,
+                'nama_materi' => $request->nama_materi
+            ];
+            Mail::to($email_siswa)->send(new NotifMateri($details));
+        }
 
-//         if ($request->file('file_materi')) {
-//             $files = [];
-//             foreach ($request->file('file_materi') as $file) {
-//                 array_push($files, [
-//                     'kode' => $validateMateri['kode'],
-//                     'nama' => Str::replace('assets/files/', '', $file->store('assets/files'))
-//                 ]);
-//             }
-//             FileModel::insert($files);
-//         }
+        if ($request->file('file_materi')) {
+            $files = [];
+            foreach ($request->file('file_materi') as $file) {
+                array_push($files, [
+                    'kode' => $validateMateri['kode'],
+                    'nama' => Str::replace('assets/files/', '', $file->store('assets/files'))
+                ]);
+            }
+            FileModel::insert($files);
+        }
 
-//         Materi::create($validateMateri);
-//         Notifikasi::insert($notifikasi);
+        Materi::create($validateMateri);
+        Notifikasi::insert($notifikasi);
 
-//         return redirect('/guru/materi')->with('pesan', "
-//             <script>
-//                 swal({
-//                     title: 'Success!',
-//                     text: 'materi sudah di posting!',
-//                     type: 'success',
-//                     padding: '2em'
-//                 })
-//             </script>
-//         ");
-//     }
+        return redirect('/admin/materi')->with('pesan', "
+            <script>
+                swal({
+                    title: 'Success!',
+                    text: 'materi sudah di posting!',
+                    type: 'success',
+                    padding: '2em'
+                })
+            </script>
+        ");
+    }
 
 //     /**
 //      * Display the specified resource.

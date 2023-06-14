@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Siswa;
 use App\Models\Tugas;
 use App\Models\Materi;
+use App\Models\AksesSesi;
 use App\Models\Notifikasi;
 use App\Models\TugasSiswa;
 use App\Models\WaktuUjian;
@@ -36,7 +37,8 @@ class SiswaController extends Controller
                 'expanded' => 'dashboard'
             ],
             'siswa' => Siswa::firstWhere('id', session('siswa')->id),
-            'materi' => Materi::where('kelas_id', session('siswa')->kelas_id)->get(),
+            'akses_sesi' => AksesSesi::where('kelas_id', session('siswa')->kelas_id)->get(),
+            'materi'=> Materi::where('sesi_id'),
             'tugas' => TugasSiswa::where('siswa_id', session('siswa')->id)->get(),
             'notif_tugas' => $notif_tugas,
             'notif_materi' => Notifikasi::where('siswa_id', session('siswa')->id)->get(),

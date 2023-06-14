@@ -30,6 +30,8 @@ class Materi extends Model
         return $this->belongsTo(Kelas::class);
     }
 
+    
+
     // DEFAULT KEY DI UBAH JADI KODE BUKAN ID LAGI
     public function getRouteKeyName()
     {
