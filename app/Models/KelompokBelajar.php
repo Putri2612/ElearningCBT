@@ -21,10 +21,14 @@ class KelompokBelajar extends Model
         return $this->belongsTo(Kelas::class, 'id_kelas');
     }
 
+    public function kelompokBelajarSiswa(){
+        return $this->hasMany(KelompokBelajarSiswa::class, 'id_kelompok',);
+    }
+
     public function guru()
     {
         return $this->belongsTo(Guru::class, 'id_guru');
     }
 
-    
+
 }

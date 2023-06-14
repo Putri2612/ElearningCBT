@@ -12,7 +12,9 @@ class Siswa extends Model
 
     protected $guarded = ['id'];
 
-    protected $with = ['kelas'];
+    // protected $with = ['kelas'];
+
+    protected $visible = '*';
 
     protected $attributes = [
         'avatar' => 'default.png',
@@ -32,7 +34,6 @@ class Siswa extends Model
         return $this->hasMany(Userchat::class, 'email', 'email');
     }
 
-
     // Relasi Ke Tugas Siswa
     public function tugassiswa()
     {
@@ -45,7 +46,11 @@ class Siswa extends Model
         return $this->hasMany(WaktuUjian::class);
     }
 
-    
+    public function kelompokBelajarSiswa()
+    {
+        return $this->hasOne(KelompokBelajarSiswa::class);
+    }
+
     public function getRouteKeyName()
     {
         return 'nis';
