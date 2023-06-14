@@ -105,6 +105,9 @@ Route::get('/admin/sesi_belajar', [AdminController::class, 'sesi_belajar'])->mid
 Route::post('/admin/tambah_sesi', [AdminController::class, 'tambah_sesi'])->middleware('is_admin');
 Route::post('/admin/edit_sesi', [AdminController::class, 'edit_sesi'])->middleware('is_admin');
 Route::get('/admin/hapus_sesi', [AdminController::class, 'hapus_sesi'])->middleware('is_admin');
+Route::get('/admin/relasi_sesi/{sesi:id}', [AdminController::class, 'relasi_sesi'])->middleware('is_admin');
+Route::get('/admin/akses_sesi', [AdminController::class, 'akses_sesi'])->name('akses_sesi')->middleware('is_admin');
+//===>Materi
 Route::resource('/admin/materi', MateriAdminController::class)->middleware('is_admin');
 // ============MAPEL
 // ==>View

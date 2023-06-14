@@ -18,6 +18,7 @@ use App\Exports\SiswaExport;
 use App\Imports\SiswaImport;
 use App\Jobs\QueueEmailNotifAkun;
 use App\Mail\NotifAkun;
+use App\Models\AksesSesi;
 use App\Models\EssaySiswa;
 use App\Models\Sesi;
 use App\Models\PgSiswa;
@@ -842,6 +843,47 @@ class AdminController extends Controller
              'sesi' => Sesi::all(),
          ]);
      }
+     public function relasi_sesi(Sesi $sesi)
+    {
+        // dd($guru);
+        return view('admin.sesi_belajar.akses_sesi', [
+            'title' => 'Akses Sesi Belajar',
+            'plugin' => '
+                <link rel="stylesheet" type="text/css" href="' . url("/assets/cbt-malela") . '/plugins/table/datatable/datatables.css">
+                <link rel="stylesheet" type="text/css" href="' . url("/assets/cbt-malela") . '/plugins/table/datatable/dt-global_style.css">
+                <script src="' . url("/assets/cbt-malela") . '/plugins/table/datatable/datatables.js"></script>
+                <script src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
+            ',
+            'menu' => [
+                'menu' => 'sesi_belajar',
+                'expanded' => 'sesi_belajar',
+                'collapse' => '',
+                'sub' => '',
+            ],
+            'admin' => Admin::firstWhere('id', session('admin')->id),
+            'sesi' => $sesi,
+            'kelas' => Kelas::all(),
+        ]);
+    }
+    public function akses_sesi(Request $request)
+    {
+        $id_sesi = $request->id_sesi;
+        $id_kelas = $request->id_kelas;
+
+        $where = [
+            'sesi_id' => $id_sesi,
+            'kelas_id' => $id_kelas,
+        ];
+
+        $result = AksesSesi::where($where)->get();
+
+        if (count($result) > 0) {
+            AksesSesi::where($where)
+                ->delete();
+        } else {
+            AksesSesi::insert($where);
+        }
+    }
      public function tambah_sesi(Request $request)
      {
  
@@ -862,7 +904,7 @@ class AdminController extends Controller
                  <script>
                      swal({
                          title: 'Berhasil!',
-                         text: 'data siswa di simpan!',
+                         text: 'data sesi di simpan!',
                          type: 'success',
                          padding: '2em'
                      })

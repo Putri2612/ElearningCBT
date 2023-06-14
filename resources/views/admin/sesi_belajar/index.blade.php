@@ -33,6 +33,9 @@
                                                 <td>{{  $s->nama_sesi }}</td>
                                                 <td>{{  $s->deskripsi }}</td>
                                                 <td>
+                                                    <a href="{{ url('/admin/relasi_sesi') }}/{{ $s->id }}" class="btn btn-primary btn-sm">
+                                                        <span data-feather="link"></span>
+                                                    </a>
                                                     <a href="javascript:void(0)" data-toggle="modal" data-target="#edit_sesi" data-id_sesi="{{ $s->id }}" data-nama_sesi="{{ $s->nama_sesi }}" data-deskripsi="{{ $s->deskripsi }}" class="btn btn-primary btn-sm edit-sesi">
                                                         <i data-feather="edit"></i>
                                                     </a>                                                    
