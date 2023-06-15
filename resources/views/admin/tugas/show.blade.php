@@ -15,28 +15,28 @@
             <div class="col-lg-12 layout-spacing">
                 <div class="widget shadow">
                     <div class="widget-content-area">
-                        <h5 class="">{{ $materi->nama_materi }}</h5>
+                        <h5 class="">{{ $tugas->nama_tugas }}</h5>
                         <table class="mt-3">
                             {{-- <tr>
                                 <th>Guru</th>
-                                <th> : {{ $materi->guru->nama_guru }}</th>
+                                <th> : {{ $tugas->guru->nama_guru }}</th>
                             </tr>
                             <tr>
                                 <th>Kelas</th>
-                                <th> : {{  $materi->kelas->nama_kelas  }}</th>
+                                <th> : {{  $tugas->kelas->nama_kelas  }}</th>
                             </tr> --}}
                             <tr>
                                 <th>Sesi</th>
-                                <th> : {{  $materi->sesi->nama_sesi  }}</th>
+                                <th> : {{  $tugas->sesi->nama_sesi  }}</th>
                             </tr>
                             <tr>
-                                <th>Waktu & Tanggal</th>
-                                <th> : {{ $materi->created_at->diffForHumans() }}</th>
+                                <th>Due date</th>
+                                <th> : {{ $tugas->due_date }}</th>
                             </tr>
                         </table>
                         <hr>
                         <div style="overflow-wrap: break-word;">
-                            {!! $materi->teks !!}
+                            {!! $tugas->teks !!}
                         </div>
 
                         <hr>
@@ -91,11 +91,12 @@
                             </div>
                             <hr>
                         @endif
-                        <div id="toggleAccordion">
+
+                        {{-- <div id="toggleAccordion">
                             <div class="card">
                                 <div class="card-header" id="...">
                                     <section class="mb-0 mt-0">
-                                        <div role="menu" class="collapsed" data-toggle="collapse" data-target="#defaultAccordionOne" aria-expanded="true" aria-controls="defaultAccordionOne">
+                                        <div role="menu" class="collapsed" data-toggle="collapse" data-target="#defaultAccordionOne" aria-expanded="true" aria-controls="defaultAccordionOne" style="cursor: pointer">
                                             Live Chat (Klik untuk lihat & tutup)
                                         </div>
                                     </section>
@@ -103,7 +104,7 @@
 
                                 <div id="defaultAccordionOne" class="collapse" aria-labelledby="..." data-parent="#toggleAccordion">
                                     <div class="card-body" style="height: 250px; overflow-y: scroll;">
-                                        <div class="inner-chat-materi">
+                                        <div class="inner-chat-tugas">
                                             <button class="btn btn-primary btn-block" type="button" disabled>
                                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                                 Loading...
@@ -112,17 +113,76 @@
                                     </div>
                                 </div>
                                 <div class="card-footer" style="background: #fff;">
-                                    <input type="hidden" name="kode" value="{{ $materi->kode }}">
+                                    <input type="hidden" name="kode" value="{{ $tugas->kode }}">
                                     <textarea class="form-control komentar" name="chat" placeholder="Tulis komentar / chat" aria-label="Tulis komentar / chat" rows="1" wrap="hard"></textarea>
-                                    <button id="chat_materi" class="btn btn-primary mt-2 d-flex ml-auto" type="button">Kirim</button>
+                                    <button id="chat_tugas" class="btn btn-primary mt-2 d-flex ml-auto" type="button">Kirim</button>
                                 </div>
                             </div>
-                        </div>
-                        <a href="{{ url("/admin/materi") }}" class="btn btn-primary mt-3">Kembali</a>
+                        </div> --}}
                     </div>
                 </div>
             </div>
         </div>
+        
+        <div class="row">
+            <div class="col-lg-6">
+                <div id="tugasAccordion" class="shadow">
+                    <div class="card">
+                        <div class="card-header bg-white" id="...">
+                            <section class="mb-0 mt-0">
+                                <div role="menu" class="" data-toggle="collapse" data-target="#TugasSiswa" aria-expanded="true" aria-controls="TugasSiswa" style="cursor: pointer">
+                                    Tugas Siswa (Klik untuk lihat & tutup)
+                                </div>
+                            </section>
+                        </div>
+
+                        <div id="TugasSiswa" class="collapse show" aria-labelledby="..." data-parent="#tugasAccordion">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Nama Siswa</th>
+                                                <th>Status</th>
+                                                {{-- <th>Nilai</th>
+                                                <th>Opsi</th> --}}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($tugas_siswa as $ts)
+                                            @if ($ts->date_send === null)
+                                                <tr>
+                                                    <td>
+                                                        {{ $ts->siswa->nama_siswa }}
+                                                    </td>
+                                                    <td colspan="3">Belum dikerjakan</td>
+                                                </tr>
+                                            @endif
+                                            {{-- @if ($ts->date_send !== null)
+                                                <tr>
+                                                    <td>
+                                                        {{ $ts->siswa->nama_siswa }}
+                                                    </td>
+                                                    <td>{{ ($ts->is_telat === 1) ? 'Terlambat' : 'sukses' }}</td>
+                                                    <td>{{ ($ts->nilai === null) ? 'belum Dinilai' : $ts->nilai }}</td>
+                                                    <td>
+                                                        <a href="{{ url("/guru/tugas_siswa/" . $ts->id) }}" class="btn btn-info"><span data-feather="eye"></span></a>
+                                                    </td>
+                                                </tr>
+                                            @endif --}}
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="{{ url("/admin/tugas") }}" class="btn btn-danger btn-sm mt-3"><span data-feather="arrow-left-circle"></span> Kembali</a>
+
     </div>
     @include('template.footer')
 </div>
@@ -149,7 +209,6 @@
 </div>
 
 <script>
-
     $('.lihat-file').click(function () {
         var source = $(this).data('source');
         var extension = $(this).data('extension');
@@ -221,9 +280,7 @@
         $('.file-content').html(html);
 
     });
-    $("#chat_materi").click(function(){var a=$("textarea[name=chat]").val(),e=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{chat:a,kode:e,_token:"{{ csrf_token() }}"},async:!0,url:"{{ url('/chat/simpan') }}/{{ $materi->kode }}",success:function(a){$("textarea[name=chat]").val("")}})}),setInterval(()=>{var a=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{kode:a,_token:"{{ csrf_token() }}"},url:"{{ url('/chat/ambil') }}/{{ $materi->kode }}",success:function(a){$(".inner-chat-materi").html(a)}})},5e3);
+    $("#chat_tugas").click(function(){var a=$("textarea[name=chat]").val(),t=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{chat:a,kode:t,_token:"{{ csrf_token() }}"},async:!0,url:"{{ url('/chat/simpan') }}/{{ $tugas->kode }}",success:function(a){$("textarea[name=chat]").val("")}})}),setInterval(()=>{var a=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{kode:a,_token:"{{ csrf_token() }}"},url:"{{ url('/chat/ambil') }}/{{ $tugas->kode }}",success:function(a){$(".inner-chat-tugas").html(a)}})},5e3);
 </script>
-
-
     {!! session('pesan') !!}
 @endsection

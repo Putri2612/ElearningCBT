@@ -5,23 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Guru;
 use App\Models\Admin;
 use App\Models\Siswa;
-use App\Models\Materi;
+use App\Models\Tugas;
 use App\Models\Sesi;
 use App\Models\KelompokBelajar;
 use App\Models\AksesSesi;
-use App\Mail\NotifMateri;
-use App\Models\EmailSettings;
+use App\Mail\NotifTugas;
+use App\Models\Userchat;
 use App\Models\FileModel;
 use App\Models\Gurukelas;
 use App\Models\Gurumapel;
-use App\Models\Notifikasi;
-use App\Models\Userchat;
+use App\Models\TugasSiswa;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\EmailSettings;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
-class MateriAdminController extends Controller
+class TugasAdminController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -30,8 +31,8 @@ class MateriAdminController extends Controller
      */
     public function index()
     {
-        return view('admin.materi.index', [
-            'title' => 'Data Materi',
+        return view('admin.tugas.index', [
+            'title' => 'Data Tugas',
             'plugin' => '
                 <link rel="stylesheet" type="text/css" href="' . url("/assets/cbt-malela") . '/plugins/table/datatable/datatables.css">
                 <link rel="stylesheet" type="text/css" href="' . url("/assets/cbt-malela") . '/plugins/table/datatable/dt-global_style.css">
@@ -39,42 +40,40 @@ class MateriAdminController extends Controller
                 <script src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
             ',
             'menu' => [
-                'menu' => 'materi',
-                'expanded' => 'materi',
+                'menu' => 'tugas',
+                'expanded' => 'tugas',
                 'collapse' => '',
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
-            'materi' => Materi::all()
+            'tugas' => Tugas::all()
         ]);
     }
 
-//     /**
-//      * Show the form for creating a new resource.
-//      *
-//      * @return \Illuminate\Http\Response
-//      */
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create()
     {
-        return view('admin.materi.create', [
-            'title' => 'Tambah Materi',
+        return view('admin.tugas.create', [
+            'title' => 'Tambah Tugas',
             'plugin' => '
                 <link href="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.css" rel="stylesheet" type="text/css" />
                 <script src="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.js"></script>
                 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
                 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-                <script src="' . url("/assets/cbt-malela") . '/plugins/resumable.js"></script>
             ',
             'menu' => [
-                'menu' => 'materi',
-                'expanded' => 'materi',
+                'menu' => 'tugas',
+                'expanded' => 'tugas',
                 'collapse' => '',
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
             'sesi' => Sesi::all(),
             'akses_sesi' => AksesSesi::all(),
-            //'guru_mapel' => Gurumapel::where('guru_id', session('guru')->id)->get(),
         ]);
     }
 
@@ -88,12 +87,13 @@ class MateriAdminController extends Controller
     {
         $email_settings = EmailSettings::first();
         $akses_sesi = AksesSesi::where('id', $request->sesi_id)->first();
+        //dd($akses_sesi);
         $kelompok_belajar = KelompokBelajar::where('id_kelas', $akses_sesi->kelas_id)->first();
-        //dd($kelompok_belajar);
+        
         $siswa = Siswa::where('kelas_id', $akses_sesi->kelas_id)->get();
         
         if ($siswa->count() == 0) {
-            return redirect('/admin/materi/create')->with('pesan', "
+            return redirect('/admin/tugas/create')->with('pesan', "
                 <script>
                     swal({
                         title: 'Error!',
@@ -104,58 +104,59 @@ class MateriAdminController extends Controller
                 </script>
             ")->withInput();
         }
-        $validateMateri = $request->validate([
-            'nama_materi' => 'required',
+
+        $validateTugas = $request->validate([
+            'nama_tugas' => 'required',
             'teks' => 'required',
         ]);
-        $validateMateri['kode'] = Str::random(20);
-        $validateMateri['guru_id'] = $kelompok_belajar->id_guru;
-        $validateMateri['kelas_id'] = $akses_sesi->kelas_id;
-        $validateMateri['sesi_id'] = $request->sesi_id;
-        // $validateMateri['mapel_id'] = $request->mapel;
+        $validateTugas['kode'] = Str::random(20);
+        $validateTugas['guru_id'] = $kelompok_belajar->id_guru;
+        $validateTugas['kelas_id'] = $akses_sesi->kelas_id;
+        $validateTugas['sesi_id'] = $request->sesi_id;
+        $validateTugas['due_date'] = $request->tgl . ' ' . $request->jam;
 
         $email_siswa = '';
-        $notifikasi = [];
+        $tugas_siswa = [];
         foreach ($siswa as $s) {
             $email_siswa .= $s->email . ',';
 
-            array_push($notifikasi, [
-                'nama' => $request->nama_materi,
-                'siswa_id' => $s->id,
-                'key' => 'materi',
-                'kode' => $validateMateri['kode']
+            array_push($tugas_siswa, [
+                'kode' => $validateTugas['kode'],
+                'siswa_id' => $s->id
             ]);
         }
 
         $email_siswa = Str::replaceLast(',', '', $email_siswa);
         $email_siswa = explode(',', $email_siswa);
-        if ($email_settings->notif_materi == 1) {
+
+        if ($email_settings->notif_tugas == 1) {
             $details = [
                 'nama_guru' => $kelompok_belajar->id_guru,
-                'nama_materi' => $request->nama_materi
+                'nama_tugas' => $request->nama_tugas,
+                'due_date' => $validateTugas['due_date']
             ];
-            Mail::to($email_siswa)->send(new NotifMateri($details));
+            Mail::to($email_siswa)->send(new NotifTugas($details));
         }
 
-        if ($request->file('file_materi')) {
+        if ($request->file('file_tugas')) {
             $files = [];
-            foreach ($request->file('file_materi') as $file) {
+            foreach ($request->file('file_tugas') as $file) {
                 array_push($files, [
-                    'kode' => $validateMateri['kode'],
+                    'kode' => $validateTugas['kode'],
                     'nama' => Str::replace('assets/files/', '', $file->store('assets/files'))
                 ]);
             }
             FileModel::insert($files);
         }
 
-        Materi::create($validateMateri);
-        Notifikasi::insert($notifikasi);
+        Tugas::create($validateTugas);
+        TugasSiswa::insert($tugas_siswa);
 
-        return redirect('/admin/materi')->with('pesan', "
+        return redirect('/admin/tugas')->with('pesan', "
             <script>
                 swal({
                     title: 'Success!',
-                    text: 'materi sudah di posting!',
+                    text: 'tugas sudah di posting!',
                     type: 'success',
                     padding: '2em'
                 })
@@ -166,39 +167,41 @@ class MateriAdminController extends Controller
 //     /**
 //      * Display the specified resource.
 //      *
-//      * @param  \App\Models\Materi  $materi
+//      * @param  \App\Models\Tugas  $tugas
 //      * @return \Illuminate\Http\Response
 //      */
-    public function show(Materi $materi)
+    public function show(Tugas $tuga)
     {
-        return view('admin.materi.show', [
-            'title' => 'Lihat Materi',
+        $tugas_siswa = TugasSiswa::where('kode', $tuga->kode)->get();
+        return view('admin.tugas.show', [
+            'title' => 'Lihat Tugas',
             'plugin' => '
                 <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-list-group.css" rel="stylesheet" type="text/css" />
                 <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-media_object.css" rel="stylesheet" type="text/css" />
             ',
             'menu' => [
-                'menu' => 'materi',
-                'expanded' => 'materi',
+                'menu' => 'tugas',
+                'expanded' => 'tugas',
                 'collapse' => '',
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
-            'materi'  => $materi,
-            'files' => FileModel::where('kode', $materi->kode)->get()
+            'tugas'  => $tuga,
+            'tugas_siswa' => $tugas_siswa,
+            'files' => FileModel::where('kode', $tuga->kode)->get()
         ]);
     }
 
 //     /**
 //      * Show the form for editing the specified resource.
 //      *
-//      * @param  \App\Models\Materi  $materi
+//      * @param  \App\Models\Tugas  $tugas
 //      * @return \Illuminate\Http\Response
 //      */
-    public function edit(Materi $materi)
+    public function edit(Tugas $tuga)
     {
-        return view('admin.materi.edit', [
-            'title' => 'Tambah Materi',
+        return view('admin.tugas.edit', [
+            'title' => 'Edit Tugas',
             'plugin' => '
                 <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-list-group.css" rel="stylesheet" type="text/css" />
                 <link href="' . url("/assets/cbt-malela") . '/plugins/file-upload/file-upload-with-preview.min.css" rel="stylesheet" type="text/css" />
@@ -207,16 +210,15 @@ class MateriAdminController extends Controller
                 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
             ',
             'menu' => [
-                'menu' => 'materi',
-                'expanded' => 'materi',
+                'menu' => 'tugas',
+                'expanded' => 'tugas',
                 'collapse' => '',
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
-            'materi'  => $materi,
-            'files' => FileModel::where('kode', $materi->kode)->get(),
-            'akses_sesi' => AksesSesi::where('sesi_id', $materi->sesi_id)->get(),
-           
+            'tugas'  => $tuga,
+            'files' => FileModel::where('kode', $tuga->kode)->get(),
+            'akses_sesi' => AksesSesi::where('sesi_id', $tuga->sesi_id)->get(),
         ]);
     }
 
@@ -224,13 +226,13 @@ class MateriAdminController extends Controller
 //      * Update the specified resource in storage.
 //      *
 //      * @param  \Illuminate\Http\Request  $request
-//      * @param  \App\Models\Materi  $materi
+//      * @param  \App\Models\Tugas  $tugas
 //      * @return \Illuminate\Http\Response
 //      */
-    public function update(Request $request, Materi $materi)
+    public function update(Request $request, Tugas $tuga)
     {
-        $validateMateri = $request->validate([
-            'nama_materi' => 'required',
+        $validateTugas = $request->validate([
+            'nama_tugas' => 'required',
             'teks' => 'required',
         ]);
         $akses_sesi = AksesSesi::where('id', $request->sesi_id)->first();
@@ -239,29 +241,31 @@ class MateriAdminController extends Controller
         //dd($kelompok_belajar);
         $siswa = Siswa::where('kelas_id', $akses_sesi->kelas_id)->get();
         //dd($siswa);
-        $validateMateri['guru_id'] = $kelompok_belajar->id_guru;
-        $validateMateri['kelas_id'] = $akses_sesi->kelas_id;
-        $validateMateri['sesi_id'] = $request->sesi_id;
+        $validateTugas['guru_id'] = $kelompok_belajar->id_guru;
+        $validateTugas['kelas_id'] = $akses_sesi->kelas_id;
+        $validateTugas['sesi_id'] = $request->sesi_id;
+        $validateTugas['due_date'] = $request->tgl . ' ' . $request->jam;
 
-        if ($request->file('file_materi')) {
+        if ($request->file('file_tugas')) {
             $files = [];
-            foreach ($request->file('file_materi') as $file) {
+            foreach ($request->file('file_tugas') as $file) {
                 array_push($files, [
-                    'kode' => $materi->kode,
+                    'kode' => $tuga->kode,
                     'nama' => Str::replace('assets/files/', '', $file->store('assets/files'))
                 ]);
             }
             FileModel::insert($files);
         }
 
-        Materi::where('id', $materi->id)
-            ->update($validateMateri);
+        Tugas::where('id', $tuga->id)
+            ->update($validateTugas);
 
-        return redirect('/admin/materi')->with('pesan', "
+
+        return redirect('/admin/tugas')->with('pesan', "
             <script>
                 swal({
                     title: 'Success!',
-                    text: 'materi sudah di update!',
+                    text: 'tugas sudah di edit!',
                     type: 'success',
                     padding: '2em'
                 })
@@ -272,37 +276,78 @@ class MateriAdminController extends Controller
 //     /**
 //      * Remove the specified resource from storage.
 //      *
-//      * @param  \App\Models\Materi  $materi
+//      * @param  \App\Models\Tugas  $tugas
 //      * @return \Illuminate\Http\Response
 //      */
-    public function destroy(Materi $materi)
+    public function destroy(Tugas $tuga)
     {
-        $files = FileModel::where('kode', $materi->kode)->get();
+        $files = FileModel::where('kode', $tuga->kode)->get();
         if ($files) {
             foreach ($files as $file) {
                 Storage::delete('assets/files/' . $file->nama);
             }
 
-            FileModel::where('kode', $materi->kode)
+            FileModel::where('kode', $tuga->kode)
                 ->delete();
         }
-
-        Notifikasi::where('kode', $materi->kode)
+        TugasSiswa::where('kode', $tuga->kode)
             ->delete();
 
-        Userchat::where('key', $materi->kode)
+        Userchat::where('key', $tuga->kode)
             ->delete();
 
-        Materi::destroy($materi->id);
-        return redirect('/admin/materi')->with('pesan', "
+        Tugas::destroy($tuga->id);
+        return redirect('/admin/tugas')->with('pesan', "
             <script>
                 swal({
                     title: 'Success!',
-                    text: 'materi di hapus!',
+                    text: 'tugas di hapus!',
                     type: 'success',
                     padding: '2em'
                 })
             </script>
         ");
     }
-    }
+
+//     public function tugas_siswa($id)
+//     {
+//         $tugas_siswa = TugasSiswa::firstWhere('id', $id);
+
+//         return view('guru.tugas.tugas-siswa', [
+//             'title' => 'Lihat Tugas',
+//             'plugin' => '
+//                 <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-list-group.css" rel="stylesheet" type="text/css" />
+//                 <link href="' . url("/assets/cbt-malela") . '/assets/css/components/custom-media_object.css" rel="stylesheet" type="text/css" />
+//             ',
+//             'menu' => [
+//                 'menu' => 'tugas',
+//                 'expanded' => 'tugas'
+//             ],
+//             'guru' => $tugas_siswa->tugas->guru,
+//             'tugas_siswa' => $tugas_siswa,
+//             'file_siswa' => FileModel::where('kode', $tugas_siswa->file)->get()
+//         ]);
+//     }
+//     public function nilai_tugas(Request $request, $id, $kode)
+//     {
+
+//         $data = [
+//             'nilai' => $request->nilai,
+//             'catatan_guru' => $request->catatan_guru
+//         ];
+
+//         TugasSiswa::where('id', $id)
+//             ->update($data);
+
+//         return redirect('/guru/tugas/' . $kode)->with('pesan', "
+//             <script>
+//                 swal({
+//                     title: 'Success!',
+//                     text: 'tugas di nilai!',
+//                     type: 'success',
+//                     padding: '2em'
+//                 })
+//             </script>
+//         ");
+//     }
+}

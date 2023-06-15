@@ -8,6 +8,7 @@ use App\Http\Controllers\KelompokBelajarController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\TugasGuruController;
+use App\Http\Controllers\TugasAdminController;
 use App\Http\Controllers\UjianGuruController;
 use App\Http\Controllers\MateriGuruController;
 use App\Http\Controllers\MateriAdminController;
@@ -107,8 +108,9 @@ Route::post('/admin/edit_sesi', [AdminController::class, 'edit_sesi'])->middlewa
 Route::get('/admin/hapus_sesi', [AdminController::class, 'hapus_sesi'])->middleware('is_admin');
 Route::get('/admin/relasi_sesi/{sesi:id}', [AdminController::class, 'relasi_sesi'])->middleware('is_admin');
 Route::get('/admin/akses_sesi', [AdminController::class, 'akses_sesi'])->name('akses_sesi')->middleware('is_admin');
-//===>Materi
+//===>Materi+Tugas
 Route::resource('/admin/materi', MateriAdminController::class)->middleware('is_admin');
+Route::resource('/admin/tugas', TugasAdminController::class)->middleware('is_admin');
 // ============MAPEL
 // ==>View
 Route::get('/admin/mapel', [AdminController::class, 'mapel'])->middleware('is_admin');
