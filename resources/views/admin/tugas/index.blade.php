@@ -25,7 +25,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($tugas as $t)
+                                            @foreach ($km_tugas as $t)
                                                 <tr>
                                                     <td>{{ $t->nama_tugas; }}</td>
                                                     <td>{{ $t->sesi->nama_sesi; }}</td>

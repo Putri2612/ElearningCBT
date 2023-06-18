@@ -15,7 +15,7 @@
             <div class="col-lg-12 layout-spacing">
                 <div class="widget shadow">
                     <div class="widget-content-area">
-                        <h5 class="">{{ $tugas->nama_tugas }}</h5>
+                        <h5 class="">{{ $km_tugas->nama_tugas }}</h5>
                         <table class="mt-3">
                             {{-- <tr>
                                 <th>Guru</th>
@@ -27,16 +27,16 @@
                             </tr> --}}
                             <tr>
                                 <th>Sesi</th>
-                                <th> : {{  $tugas->sesi->nama_sesi  }}</th>
+                                <th> : {{  $km_tugas->sesi->nama_sesi  }}</th>
                             </tr>
                             <tr>
                                 <th>Due date</th>
-                                <th> : {{ $tugas->due_date }}</th>
+                                <th> : {{ $km_tugas->due_date }}</th>
                             </tr>
                         </table>
                         <hr>
                         <div style="overflow-wrap: break-word;">
-                            {!! $tugas->teks !!}
+                            {!! $km_tugas->teks !!}
                         </div>
 
                         <hr>
@@ -280,7 +280,7 @@
         $('.file-content').html(html);
 
     });
-    $("#chat_tugas").click(function(){var a=$("textarea[name=chat]").val(),t=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{chat:a,kode:t,_token:"{{ csrf_token() }}"},async:!0,url:"{{ url('/chat/simpan') }}/{{ $tugas->kode }}",success:function(a){$("textarea[name=chat]").val("")}})}),setInterval(()=>{var a=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{kode:a,_token:"{{ csrf_token() }}"},url:"{{ url('/chat/ambil') }}/{{ $tugas->kode }}",success:function(a){$(".inner-chat-tugas").html(a)}})},5e3);
+    $("#chat_tugas").click(function(){var a=$("textarea[name=chat]").val(),t=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{chat:a,kode:t,_token:"{{ csrf_token() }}"},async:!0,url:"{{ url('/chat/simpan') }}/{{ $km_tugas->kode }}",success:function(a){$("textarea[name=chat]").val("")}})}),setInterval(()=>{var a=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{kode:a,_token:"{{ csrf_token() }}"},url:"{{ url('/chat/ambil') }}/{{ $km_tugas->kode }}",success:function(a){$(".inner-chat-tugas").html(a)}})},5e3);
 </script>
     {!! session('pesan') !!}
 @endsection

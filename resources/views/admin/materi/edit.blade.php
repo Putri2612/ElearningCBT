@@ -21,14 +21,14 @@
                             <h5 class="">Edit Materi</h5>
                             <a href="{{ url("/admin/materi") }}" class="btn btn-danger btn-sm mt-3"><span data-feather="arrow-left-circle"></span> Kembali</a>
                         </div>
-                        <form action="{{ url('admin/materi/' . $materi->kode) }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                        <form action="{{ url('admin/materi/' . $km_materi->kode) }}" method="POST" enctype="multipart/form-data" class="mt-3">
                             @csrf
                             @method('PUT')
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label for="">Nama Materi</label>
-                                        <input type="text" name="nama_materi" class="form-control" value="{{ old('nama_materi', $materi->nama_materi) }}" required>
+                                        <input type="text" name="nama_materi" class="form-control" value="{{ old('nama_materi', $km_materi->nama_materi) }}" required>
                                         @error('nama_materi')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
@@ -40,7 +40,7 @@
                                         <select class="form-control" name="sesi_id" id="sesi" required>
                                             <option value="">Pilih</option>
                                             @foreach ($akses_sesi as $as)
-                                                @if (old('sesi', $materi->sesi_id) == $as->sesi->sesi_id)
+                                                @if (old('sesi', $km_materi->sesi_id) == $as->sesi->sesi_id)
                                                     <option value="{{ $as->sesi->id }}" selected>{{ $as->sesi->nama_sesi }}</option>
                                                 @else
                                                     <option value="{{ $as->sesi->id }}" selected>{{ $as->sesi->nama_sesi }}</option>
@@ -71,7 +71,7 @@
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                                 <textarea class="form-control summernote" name="teks" id="teks" cols="30" rows="5" wrap="hard">
-                                   {!! old('teks', $materi->teks) !!}
+                                   {!! old('teks', $km_materi->teks) !!}
                                 </textarea>
                             </div>
                             @if ($files)

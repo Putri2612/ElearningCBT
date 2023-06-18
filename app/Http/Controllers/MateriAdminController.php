@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Guru;
 use App\Models\Admin;
 use App\Models\Siswa;
-use App\Models\Materi;
+use App\Models\KmMateri;
 use App\Models\Sesi;
 use App\Models\KelompokBelajar;
 use App\Models\AksesSesi;
@@ -45,7 +45,7 @@ class MateriAdminController extends Controller
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
-            'materi' => Materi::all()
+            'km_materi' => KmMateri::all()
         ]);
     }
 
@@ -104,14 +104,14 @@ class MateriAdminController extends Controller
                 </script>
             ")->withInput();
         }
-        $validateMateri = $request->validate([
+        $kmvalidateMateri = $request->validate([
             'nama_materi' => 'required',
             'teks' => 'required',
         ]);
-        $validateMateri['kode'] = Str::random(20);
-        $validateMateri['guru_id'] = $kelompok_belajar->id_guru;
-        $validateMateri['kelas_id'] = $akses_sesi->kelas_id;
-        $validateMateri['sesi_id'] = $request->sesi_id;
+        $kmvalidateMateri['kode'] = Str::random(20);
+        $kmvalidateMateri['guru_id'] = $kelompok_belajar->id_guru;
+        $kmvalidateMateri['kelas_id'] = $akses_sesi->kelas_id;
+        $kmvalidateMateri['sesi_id'] = $request->sesi_id;
         // $validateMateri['mapel_id'] = $request->mapel;
 
         $email_siswa = '';
@@ -123,7 +123,7 @@ class MateriAdminController extends Controller
                 'nama' => $request->nama_materi,
                 'siswa_id' => $s->id,
                 'key' => 'materi',
-                'kode' => $validateMateri['kode']
+                'kode' => $kmvalidateMateri['kode']
             ]);
         }
 
@@ -141,14 +141,14 @@ class MateriAdminController extends Controller
             $files = [];
             foreach ($request->file('file_materi') as $file) {
                 array_push($files, [
-                    'kode' => $validateMateri['kode'],
+                    'kode' => $kmvalidateMateri['kode'],
                     'nama' => Str::replace('assets/files/', '', $file->store('assets/files'))
                 ]);
             }
             FileModel::insert($files);
         }
 
-        Materi::create($validateMateri);
+        KmMateri::create($kmvalidateMateri);
         Notifikasi::insert($notifikasi);
 
         return redirect('/admin/materi')->with('pesan', "
@@ -169,7 +169,7 @@ class MateriAdminController extends Controller
 //      * @param  \App\Models\Materi  $materi
 //      * @return \Illuminate\Http\Response
 //      */
-    public function show(Materi $materi)
+    public function show(KmMateri $materi)
     {
         return view('admin.materi.show', [
             'title' => 'Lihat Materi',
@@ -184,7 +184,7 @@ class MateriAdminController extends Controller
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
-            'materi'  => $materi,
+            'km_materi'  => $materi,
             'files' => FileModel::where('kode', $materi->kode)->get()
         ]);
     }
@@ -195,7 +195,7 @@ class MateriAdminController extends Controller
 //      * @param  \App\Models\Materi  $materi
 //      * @return \Illuminate\Http\Response
 //      */
-    public function edit(Materi $materi)
+    public function edit(KmMateri $materi)
     {
         return view('admin.materi.edit', [
             'title' => 'Tambah Materi',
@@ -213,7 +213,7 @@ class MateriAdminController extends Controller
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
-            'materi'  => $materi,
+            'km_materi'  => $materi,
             'files' => FileModel::where('kode', $materi->kode)->get(),
             'akses_sesi' => AksesSesi::where('sesi_id', $materi->sesi_id)->get(),
            
@@ -227,7 +227,7 @@ class MateriAdminController extends Controller
 //      * @param  \App\Models\Materi  $materi
 //      * @return \Illuminate\Http\Response
 //      */
-    public function update(Request $request, Materi $materi)
+    public function update(Request $request, KmMateri $materi)
     {
         $validateMateri = $request->validate([
             'nama_materi' => 'required',
@@ -254,7 +254,7 @@ class MateriAdminController extends Controller
             FileModel::insert($files);
         }
 
-        Materi::where('id', $materi->id)
+        KmMateri::where('id', $materi->id)
             ->update($validateMateri);
 
         return redirect('/admin/materi')->with('pesan', "
@@ -275,7 +275,7 @@ class MateriAdminController extends Controller
 //      * @param  \App\Models\Materi  $materi
 //      * @return \Illuminate\Http\Response
 //      */
-    public function destroy(Materi $materi)
+    public function destroy(KmMateri $materi)
     {
         $files = FileModel::where('kode', $materi->kode)->get();
         if ($files) {
@@ -293,7 +293,7 @@ class MateriAdminController extends Controller
         Userchat::where('key', $materi->kode)
             ->delete();
 
-        Materi::destroy($materi->id);
+        KmMateri::destroy($materi->id);
         return redirect('/admin/materi')->with('pesan', "
             <script>
                 swal({

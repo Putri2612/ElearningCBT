@@ -16,6 +16,7 @@
 
                         <div class="widget-content">
                             @if ($notif_tugas->count() > 0)
+                        {{-- {{ dd($notif_tugas) }} --}}
                                 @foreach ($notif_tugas as $ts)
                                     <a href="{{ url('/siswa/tugas/' . $ts->kode) }}">
                                         <div class="transactions-list mt-1">
@@ -40,6 +41,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="t-name">
+                                                        
                                                         <h4>{{ $ts->tugas->nama_tugas }}</h4>
                                                         <p class="meta-date">{{ $ts->tugas->nama_tugas }}</p>
                                                     </div>

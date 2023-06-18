@@ -18,4 +18,9 @@ class Notifikasi extends Model
     {
         return $this->belongsTo(Materi::class, 'kode', 'kode');
     }
+
+    public function tugas()
+    {
+        return $this->belongsTo(Tugas::class, 'kode', 'kode');
+    }
 }

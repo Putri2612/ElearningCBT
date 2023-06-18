@@ -13,7 +13,7 @@ class Tugas extends Model
 
     protected $guarded = ['id'];
 
-    protected $with = ['guru', 'sesi', 'kelas'];
+    protected $with = ['guru', 'mapel', 'kelas'];
 
     // Relasi Ke Guru
     public function guru()
@@ -21,9 +21,9 @@ class Tugas extends Model
         return $this->belongsTo(Guru::class);
     }
     // Relasi Ke Sesi
-    public function sesi()
+    public function mapel()
     {
-        return $this->belongsTo(Sesi::class);
+        return $this->belongsTo(Mapel::class);
     }
     // relasi Ke kelas
     public function kelas()

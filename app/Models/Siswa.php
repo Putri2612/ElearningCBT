@@ -39,6 +39,11 @@ class Siswa extends Model
         return $this->hasMany(TugasSiswa::class);
     }
 
+    public function tugas()
+    {
+        return $this->hasMany(Tugas::class);
+    }
+
     public function kelompokbelajarsiswa()
     {
         return $this->hasMany(KelompokBelajarSiswa::class);

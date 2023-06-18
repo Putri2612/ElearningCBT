@@ -15,7 +15,7 @@
             <div class="col-lg-12 layout-spacing">
                 <div class="widget shadow">
                     <div class="widget-content-area">
-                        <h5 class="">{{ $materi->nama_materi }}</h5>
+                        <h5 class="">{{ $km_materi->nama_materi }}</h5>
                         <table class="mt-3">
                             {{-- <tr>
                                 <th>Guru</th>
@@ -27,16 +27,16 @@
                             </tr> --}}
                             <tr>
                                 <th>Sesi</th>
-                                <th> : {{  $materi->sesi->nama_sesi  }}</th>
+                                <th> : {{  $km_materi->sesi->nama_sesi  }}</th>
                             </tr>
                             <tr>
                                 <th>Waktu & Tanggal</th>
-                                <th> : {{ $materi->created_at->diffForHumans() }}</th>
+                                <th> : {{ $km_materi->created_at->diffForHumans() }}</th>
                             </tr>
                         </table>
                         <hr>
                         <div style="overflow-wrap: break-word;">
-                            {!! $materi->teks !!}
+                            {!! $km_materi->teks !!}
                         </div>
 
                         <hr>
@@ -112,7 +112,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer" style="background: #fff;">
-                                    <input type="hidden" name="kode" value="{{ $materi->kode }}">
+                                    <input type="hidden" name="kode" value="{{ $km_materi->kode }}">
                                     <textarea class="form-control komentar" name="chat" placeholder="Tulis komentar / chat" aria-label="Tulis komentar / chat" rows="1" wrap="hard"></textarea>
                                     <button id="chat_materi" class="btn btn-primary mt-2 d-flex ml-auto" type="button">Kirim</button>
                                 </div>
@@ -221,7 +221,7 @@
         $('.file-content').html(html);
 
     });
-    $("#chat_materi").click(function(){var a=$("textarea[name=chat]").val(),e=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{chat:a,kode:e,_token:"{{ csrf_token() }}"},async:!0,url:"{{ url('/chat/simpan') }}/{{ $materi->kode }}",success:function(a){$("textarea[name=chat]").val("")}})}),setInterval(()=>{var a=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{kode:a,_token:"{{ csrf_token() }}"},url:"{{ url('/chat/ambil') }}/{{ $materi->kode }}",success:function(a){$(".inner-chat-materi").html(a)}})},5e3);
+    $("#chat_materi").click(function(){var a=$("textarea[name=chat]").val(),e=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{chat:a,kode:e,_token:"{{ csrf_token() }}"},async:!0,url:"{{ url('/chat/simpan') }}/{{ $km_materi->kode }}",success:function(a){$("textarea[name=chat]").val("")}})}),setInterval(()=>{var a=$("input[name=kode]").val();$.ajax({headers:{"X-CSRF-TOKEN":"{{ csrf_token() }}"},type:"POST",data:{kode:a,_token:"{{ csrf_token() }}"},url:"{{ url('/chat/ambil') }}/{{ $km_materi->kode }}",success:function(a){$(".inner-chat-materi").html(a)}})},5e3);
 </script>
 
 

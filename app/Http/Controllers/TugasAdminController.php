@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Guru;
 use App\Models\Admin;
 use App\Models\Siswa;
-use App\Models\Tugas;
+use App\Models\KmTugas;
 use App\Models\Sesi;
 use App\Models\KelompokBelajar;
 use App\Models\AksesSesi;
@@ -46,7 +46,7 @@ class TugasAdminController extends Controller
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
-            'tugas' => Tugas::all()
+            'km_tugas' => KmTugas::all()
         ]);
     }
 
@@ -149,7 +149,7 @@ class TugasAdminController extends Controller
             FileModel::insert($files);
         }
 
-        Tugas::create($validateTugas);
+        KmTugas::create($validateTugas);
         TugasSiswa::insert($tugas_siswa);
 
         return redirect('/admin/tugas')->with('pesan', "
@@ -170,7 +170,7 @@ class TugasAdminController extends Controller
 //      * @param  \App\Models\Tugas  $tugas
 //      * @return \Illuminate\Http\Response
 //      */
-    public function show(Tugas $tuga)
+    public function show(KmTugas $tuga)
     {
         $tugas_siswa = TugasSiswa::where('kode', $tuga->kode)->get();
         return view('admin.tugas.show', [
@@ -186,7 +186,7 @@ class TugasAdminController extends Controller
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
-            'tugas'  => $tuga,
+            'km_tugas'  => $tuga,
             'tugas_siswa' => $tugas_siswa,
             'files' => FileModel::where('kode', $tuga->kode)->get()
         ]);
@@ -198,7 +198,7 @@ class TugasAdminController extends Controller
 //      * @param  \App\Models\Tugas  $tugas
 //      * @return \Illuminate\Http\Response
 //      */
-    public function edit(Tugas $tuga)
+    public function edit(KmTugas $tuga)
     {
         return view('admin.tugas.edit', [
             'title' => 'Edit Tugas',
@@ -216,7 +216,7 @@ class TugasAdminController extends Controller
                 'sub' => '',
             ],
             'admin' => Admin::firstWhere('id', session('admin')->id),
-            'tugas'  => $tuga,
+            'km_tugas'  => $tuga,
             'files' => FileModel::where('kode', $tuga->kode)->get(),
             'akses_sesi' => AksesSesi::where('sesi_id', $tuga->sesi_id)->get(),
         ]);
@@ -229,7 +229,7 @@ class TugasAdminController extends Controller
 //      * @param  \App\Models\Tugas  $tugas
 //      * @return \Illuminate\Http\Response
 //      */
-    public function update(Request $request, Tugas $tuga)
+    public function update(Request $request, KmTugas $tuga)
     {
         $validateTugas = $request->validate([
             'nama_tugas' => 'required',
@@ -257,7 +257,7 @@ class TugasAdminController extends Controller
             FileModel::insert($files);
         }
 
-        Tugas::where('id', $tuga->id)
+        KmTugas::where('id', $tuga->id)
             ->update($validateTugas);
 
 
@@ -279,7 +279,7 @@ class TugasAdminController extends Controller
 //      * @param  \App\Models\Tugas  $tugas
 //      * @return \Illuminate\Http\Response
 //      */
-    public function destroy(Tugas $tuga)
+    public function destroy(KmTugas $tuga)
     {
         $files = FileModel::where('kode', $tuga->kode)->get();
         if ($files) {
@@ -296,7 +296,7 @@ class TugasAdminController extends Controller
         Userchat::where('key', $tuga->kode)
             ->delete();
 
-        Tugas::destroy($tuga->id);
+        KmTugas::destroy($tuga->id);
         return redirect('/admin/tugas')->with('pesan', "
             <script>
                 swal({

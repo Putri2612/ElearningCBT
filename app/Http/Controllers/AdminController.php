@@ -673,7 +673,7 @@ class AdminController extends Controller
         foreach ($dataSiswa as $value) {
             $siswaTemp[] = $value->nis;
         }
-
+        //dd($siswaTemp);
         $dataKelompok = [];
         for ($i=0; $i <= floor(count($siswaTemp)/$jumlah); $i++) {
             $itung = $i;
@@ -692,7 +692,7 @@ class AdminController extends Controller
                 'dataSiswa' => $kelompokTemp,
             ];
         }
-        // dd($siswaTemp);
+        //dd($siswaTemp);
         if(count($siswaTemp) > 0){
             for ($i=0; $i < count($siswaTemp); $i++) { 
                 $dataKelompok[$i]['dataSiswa'][] = $value;
@@ -700,6 +700,7 @@ class AdminController extends Controller
         }
 
         foreach ($dataKelompok as $kelompok) {
+            //dd($dataKelompok);
             // Insert data into kelompok_belajar table
             $kelompokBelajar = new KelompokBelajar();
             $kelompokBelajar->nama_kelompok = $kelompok['nama_kelompok'];

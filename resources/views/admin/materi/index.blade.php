@@ -26,7 +26,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($materi as $m)
+                                            @foreach ($km_materi as $m)
                                                 <tr>
                                                     <td>{{ $m->nama_materi }}</td>
                                                     <td>{{ $m->sesi->nama_sesi }}</td>
